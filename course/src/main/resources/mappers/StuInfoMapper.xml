@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mandu.stuselectsystem.mapper.StuInfoMapper">
+    <insert id="save" parameterType="com.mandu.stuselectsystem.dto.StuInfoDto">
+        insert into tbl_stu_info(stuName,stuPwd,stuSex,stuEmail)
+        VALUES(#{stuName},md5('888888'),#{stuSex},#{stuEmail})
+    </insert>
+
+    <select id="findByParam" parameterType="com.mandu.stuselectsystem.dto.StuInfoDto" resultType="com.mandu.stuselectsystem.po.StuInfo">
+        select * from tbl_stu_info
+        <where>
+            <if test="stuSex !=0 and stuSex!=null">
+                and stuSex = #{stuSex}
+            </if>
+            <if test="stuName!=null and stuName !=''">
+                and stuName like concat('%',#{stuName},'%')
+            </if>
+        </where>
+    </select>
+
+    <delete id="delete" parameterType="com.mandu.stuselectsystem.dto.StuInfoDto">
+        delete from tbl_stu_info where stuId = #{stuId}
+    </delete>
+
+    <update id="edit" parameterType="com.mandu.stuselectsystem.dto.StuInfoDto">
+        update tbl_stu_info
+        set  stuName=#{stuName},stuSex=#{stuSex},stuEmail=#{stuEmail},stuStatus=#{stuStatus}
+        where stuId = #{stuId}
+    </update>
+
+    <insert id="batchSave" parameterType="map">
+        insert into tbl_stu_info(stuName,stuPwd,stuSex,stuEmail)
+        values
+        <foreach collection="list" item="stu" separator=",">
+            (#{stu.name},md5('888888'),#{stu.stuSex},#{stu.email})
+        </foreach>
+    </insert>
+    
+    <select id="Login" parameterType="com.mandu.stuselectsystem.dto.StuInfoDto" resultType="com.mandu.stuselectsystem.po.StuInfo">
+        select
+            stuId,stuName,stuSex,stuEmail
+        from tbl_stu_info
+        where (stuId = #{LoginName} or stuEmail = #{LoginName})
+          and stuPwd =md5(#{LoginPwd})
+    </select>
+
+    <update id="updatePwd" parameterType="com.mandu.stuselectsystem.dto.StuInfoDto">
+        update tbl_stu_info set stuPwd = md5(#{stuPwd})
+        where stuId =#{stuId} and stuPwd = md5(#{oldPwd})
+    </update>
+</mapper>

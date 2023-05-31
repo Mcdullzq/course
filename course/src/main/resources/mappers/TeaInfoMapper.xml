@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mandu.stuselectsystem.mapper.TeaInfoMapper">
+    <select id="login" parameterType="com.mandu.stuselectsystem.dto.TeaInfoDto"
+            resultType="com.mandu.stuselectsystem.po.TeaInfo">
+        select * from tbl_tea_info
+        where (teaId =#{loginName} or teaEmail = #{loginName} )
+            and teaPwd =md5(#{loginPwd})
+    </select>
+
+    <insert id="save" parameterType="com.mandu.stuselectsystem.dto.TeaInfoDto">
+        insert into tbl_tea_info(teaName,teaPwd,teaSex,teaEmail,teaType)
+        values (#{teaName},md5('888888'),#{teaSex},#{teaEmail},#{teaType})
+    </insert>
+
+    <select id="findByParam" parameterType="com.mandu.stuselectsystem.dto.TeaInfoDto"
+            resultType="com.mandu.stuselectsystem.po.TeaInfo">
+        select
+            teaId,teaName,teaSex,teaEmail,teaType,teaStatus
+        from tbl_tea_info
+        <where>
+            <if test="teaName != null and teaName !=''" >
+                and teaName like concat('%',#{teaName},'%')
+            </if>
+
+            <if test="teaSex != null and teaSex!= 0">
+                and teaSex=#{teaSex}
+            </if>
+
+            <if test="teaType != null and teaType!= 0">
+                and teaType=#{teaType}
+            </if>
+            <if test="teaStatus != null and teaStatus !=0">
+                and teaStatus=#{teaStatus}
+            </if>
+        </where>
+    </select>
+
+    <delete id="delete" parameterType="com.mandu.stuselectsystem.dto.TeaInfoDto">
+        delete from tbl_tea_info
+        where teaId = #{teaId}
+    </delete>
+
+    <update id="update" parameterType="com.mandu.stuselectsystem.dto.TeaInfoDto">
+        update tbl_tea_info
+        set teaName = #{teaName},teaSex=#{teaSex},teaEmail=#{teaEmail},teaType=#{teaType},teaStatus=#{teaStatus}
+        where teaId=#{teaId}
+    </update>
+
+    <select id="findByCourseId" parameterType="com.mandu.stuselectsystem.dto.CourseInfoDto" resultType="com.mandu.stuselectsystem.po.TeaInfo">
+        select teaId,teaName
+        from tbl_tea_info
+        where teaId not in
+            (select teaId from tbl_teachcourse_info where courseId = #{courseId})
+            and teaType !=1
+    </select>
+    <update id="updatePwd" parameterType="com.mandu.stuselectsystem.dto.TeaInfoDto">
+        update tbl_tea_info
+        set teaPwd= md5(#{teaPwd})
+        where teaPwd = md5(#{teaOldPwd}) and teaId = #{teaId}
+    </update>
+</mapper>
