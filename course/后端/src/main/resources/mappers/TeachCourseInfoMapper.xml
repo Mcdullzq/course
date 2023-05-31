@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mandu.stuselectsystem.mapper.TeachCourseInfoMapper">
+    <insert id="save" parameterType="com.mandu.stuselectsystem.dto.TeachCourseInfoDto">
+        insert tbl_teachcourse_info(teaId,courseId,classroomId)
+        values(#{teaId},#{courseId},#{classroomId})
+    </insert>
+
+    <select id="findByParam" parameterType="com.mandu.stuselectsystem.dto.TeachCourseInfoDto" resultType="map">
+        select
+        tc.tcId,tea.teaId,tea.teaName,
+        cr.classroomId,cr.classroomName,cr.classroomLocation,cr.classroomNumber,
+        cour.courseId,cour.courseName,cour.courseCredit,cour.courseExamMethod
+        from tbl_teachcourse_info tc , tbl_tea_info tea,tbl_classroom_info cr ,tbl_course_info cour
+        where tc.teaId = tea.teaId and tc.classroomId = cr.classroomId and tc.courseId = cour.courseId
+        <if test="courseId !=null and courseId !=0">
+            and tc.courseId = #{courseId}
+        </if>
+        <if test="teaId !=null and teaId !=0">
+            and tc.teaId = #{teaId}
+        </if>
+        order by tc.tcId
+    </select>
+
+    <delete id="delete" parameterType="com.mandu.stuselectsystem.dto.TeachCourseInfoDto">
+        delete from tbl_teachcourse_info
+        where tcId =#{tcId}
+    </delete>
+</mapper>
