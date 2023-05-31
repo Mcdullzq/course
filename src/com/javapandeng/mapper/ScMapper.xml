@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javapandeng.mapper.ScMapper">
+<!--    实体类与数据库映射字段部分-->
+    <resultMap id="ResultMapSc" type="com.javapandeng.po.Sc">
+         <result property="id" column="id" jdbcType="INTEGER"/>
+         <result property="itemId" column="item_id" jdbcType="INTEGER"/>
+         <result property="userId" column="user_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="ResultMapScDto" type="com.javapandeng.po.Sc">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="itemId" column="item_id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <association property="item" column="item_id" select="com.javapandeng.mapper.ItemMapper.load"/>
+    </resultMap>
+<!--    声明数据库字段-->
+    <sql id="Sc_field">
+        id,item_id,user_id
+    </sql>
+<!--    实体类属性-->
+    <sql id="Sc_insert">
+        #{id},#{itemId},#{userId}
+    </sql>
+<!--    更新时条件-->
+    <sql id="Sc_update">
+        <if test="itemId !=null">
+            item_id =#{itemId},
+        </if>
+        <if test="userId !=null">
+            user_id =#{userId},
+        </if>
+
+    </sql>
+
+    <!--删除时条件-->
+<sql id="Sc_where">
+    <if test="id!=null">
+        and id=#{id}
+    </if>
+    <if test="itemId!=null">
+        and item_id=#{itemId}
+    </if>
+    <if test="userId!=null">
+        and user_id=#{userId}
+    </if>
+</sql>
+
+    <insert id="insert" parameterType="com.javapandeng.po.Sc" useGeneratedKeys="true" keyProperty="id">
+        insert into sc(
+            <include refid="Sc_field"/>
+        )values (
+            <include refid="Sc_insert"/>
+        )
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from sc where id = #{id}
+    </delete>
+
+    <delete id="deleteByEntity" parameterType="com.javapandeng.po.Sc">
+        delete from sc where 1=1
+        <include refid="Sc_where"/>
+    </delete>
+
+    <delete id="deleteByMap" parameterType="java.util.HashMap">
+        delete from sc where 1=1
+        <include refid="Sc_where"/>
+    </delete>
+
+    <update id="update" parameterType="com.javapandeng.po.Sc">
+        update sc
+        <set>
+            <include refid="Sc_update"/>
+        </set>
+        where 1=1
+            <include refid="Sc_where"/>
+    </update>
+
+    <update id="updateById" parameterType="com.javapandeng.po.Sc">
+        update sc
+        <set>
+            <include refid="Sc_update"/>
+        </set>
+        where id =#{id}
+    </update>
+
+    <select id="listByMap" resultMap="ResultMapSc" parameterType="map">
+        select <include refid="Sc_field"/>
+        from sc where 1=1
+        <include refid="Sc_where"/>
+    </select>
+
+    <select id="listAll" resultMap="ResultMapSc">
+        select <include refid="Sc_field"/>
+        from sc
+    </select>
+    <select id="listAllByEntity" resultMap="ResultMapSc" parameterType="com.javapandeng.po.Sc">
+        select <include refid="Sc_field"/>
+        from sc where 1=1
+        <include refid="Sc_where"/>
+    </select>
+
+    <select id="getById" resultMap="ResultMapSc" parameterType="java.lang.Integer">
+        select <include refid="Sc_field"/>
+        from sc where id =#{id}
+    </select>
+
+    <select id="load" resultMap="ResultMapSc" parameterType="java.lang.Integer">
+        select <include refid="Sc_field"/>
+        from sc where id =#{id}
+    </select>
+
+    <select id="getByMap" resultMap="ResultMapSc" parameterType="map">
+        select <include refid="Sc_field"/>
+        from sc where 1=1
+        <include refid="Sc_where"/>
+    </select>
+
+    <select id="getByEntity" resultMap="ResultMapSc" parameterType="com.javapandeng.po.Sc">
+        select <include refid="Sc_field"/>
+        from sc where 1=1
+        <include refid="Sc_where"/>
+    </select>
+
+    <select id="findByMap" resultMap="ResultMapSc" parameterType="map">
+        select <include refid="Sc_field"/>
+        from sc where 1=1
+        <include refid="Sc_where"/>
+    </select>
+
+    <select id="findByEntity" resultMap="ResultMapSc" parameterType="com.javapandeng.po.Sc">
+        select <include refid="Sc_field"/>
+        from sc where 1=1
+        <include refid="Sc_where"/>
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into sc(
+               <include refid="Sc_field"/>
+        )values 
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.itemId},#{item.userId})
+        </foreach>
+    </insert>
+
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" separator=";">
+            update sc
+            <set>
+                <if test="item.itemId !=null">
+                    item_id = #{item.itemId},
+                </if>
+                <if test="item.userId !=null">
+                    user_id = #{item.userId},
+                </if>
+
+            </set>
+                where 1=1
+            <if test="item.id !=null">
+                and id = #{item.id}
+            </if>
+        </foreach>
+    </update>
+<!--    封装纯sql语法-->
+<!--    查询一个对象返回map-->
+    <select id="getBySqlReturnMap" resultType="map">
+        ${sql}
+    </select>
+    <select id="getBySqlReturnEntity" resultMap="ResultMapSc">
+        ${sql}
+    </select>
+    <select id="listBySqlReturnMap" resultType="map">
+        ${sql}
+    </select>
+    <select id="listBySqlReturnEntity" resultMap="ResultMapScDto">
+        ${sql}
+    </select>
+    <select id="findBySqlReturnEntity" resultMap="ResultMapScDto">
+        ${sql}
+    </select>
+
+    <update id="updateBysql" >
+        ${sql}
+    </update>
+    <delete id="deleteBySql" >
+        ${sql}
+    </delete>
+</mapper>
